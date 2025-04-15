@@ -1,6 +1,6 @@
 provider "azurerm" {
   features {}
-  subscription_id = "0f9d69f5-ad20-4bba-b635-f1f6dc2c1744" 
+  subscription_id = "0f9d69f5-ad20-4bba-b635-f1f6dc2c1744"
 }
 
 resource "azurerm_resource_group" "main" {
@@ -9,7 +9,7 @@ resource "azurerm_resource_group" "main" {
 }
 
 resource "azurerm_container_registry" "acr" {
-  name                = "kubernetesacr04082003" 
+  name                = "kubernetesacr04082003" # Must be globally unique, 5-50 alphanumeric
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
   sku                 = "Basic"
@@ -33,10 +33,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   network_profile {
-    network_plugin = "azure"
-    load_balancer_sku = "standard"
+    network_plugin      = "azure"
+    load_balancer_sku   = "standard"
   }
-
 }
 
 resource "azurerm_role_assignment" "aks_acr_pull" {
@@ -44,4 +43,5 @@ resource "azurerm_role_assignment" "aks_acr_pull" {
   role_definition_name             = "AcrPull"
   scope                            = azurerm_container_registry.acr.id
   skip_service_principal_aad_check = true
+  depends_on                       = [azurerm_container_registry.acr, azurerm_kubernetes_cluster.aks]
 }
