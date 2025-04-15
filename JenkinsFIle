@@ -3,49 +3,56 @@ pipeline {
 
     environment {
         ACR_NAME = 'kubernetes-acr-04082003'
-        ACR_LOGIN_SERVER = "kubernetes-acr-04082003.azurecr.io"
+        ACR_LOGIN_SERVER = "${ACR_NAME}.azurecr.io"
         IMAGE_NAME = 'kubernetes04082003'
         RESOURCE_GROUP = 'rg-aks-acr'
-        AKS_CLUSTER = 'my-cluster-04082003'
+        AKS_CLUSTER = 'my-cluster-040820035'
     }
 
     stages {
         stage('Terraform Init & Apply') {
             steps {
                 dir('terraform') {
-                    bat 'terraform init'
-                    bat 'terraform apply -auto-approve'
+                    sh 'terraform init'
+                    sh 'terraform apply -auto-approve'
                 }
+            }
+        }
+
+        stage('Azure CLI Login') {
+            steps {
+                // Assumes Jenkins agent has Azure CLI pre-authenticated or uses a service principal
+                sh 'az account show'
             }
         }
 
         stage('Login to ACR') {
             steps {
-                bat 'az acr login --name $ACR_NAME'
+                sh 'az acr login --name $ACR_NAME'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:latest .'
+                sh 'docker build -t $ACR_LOGIN_SERVER/$IMAGE_NAME:latest .'
             }
         }
 
         stage('Push Image to ACR') {
             steps {
-                bat 'docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:latest'
+                sh 'docker push $ACR_LOGIN_SERVER/$IMAGE_NAME:latest'
             }
         }
 
         stage('Get AKS Credentials') {
             steps {
-                bat 'az aks get-credentials --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER --overwrite-existing'
+                sh 'az aks get-credentials --resource-group $RESOURCE_GROUP --name $AKS_CLUSTER --overwrite-existing'
             }
         }
 
         stage('Deploy to AKS') {
             steps {
-                bat 'kubectl apply -f deployment.yml'
+                sh 'kubectl apply -f deployment.yml'
             }
         }
     }
