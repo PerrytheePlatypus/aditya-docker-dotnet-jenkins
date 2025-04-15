@@ -8,7 +8,7 @@ pipeline {
         RESOURCE_GROUP  = 'rg-aks-acr'
         AKS_CLUSTER     = 'mycluster040820035'
         AZ_SUBSCRIPTION = '0f9d69f5-ad20-4bba-b635-f1f6dc2c1744'
-        AZ_TENANT       = '<YOUR_TENANT_ID>' // <-- Replace with your Azure tenant ID
+        AZ_TENANT       = '71f242b3-647c-4666-8969-0cff7437c32c'
     }
 
     stages {
