@@ -1,0 +1,6 @@
+services:
+  dotnetwebapp:
+    image: ${DOCKER_REGISTRY-}dotnetwebapp
+    build:
+      context: .
+      dockerfile: DotnetWebAPP/Dockerfile
