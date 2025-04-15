@@ -1,19 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: myapp
+  name: kubernetes-api-deployment
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: myapp
+      app: kubernetes-api
   template:
     metadata:
       labels:
-        app: myapp
+        app: kubernetes-api
     spec:
       containers:
-      - name: myapp
-        image: kubernetesacr04082003.azurecr.io/kubernetes04082003:latest # Jenkins will update this tag
-        ports:
-        - containerPort: 80
+        - name: kubernetes-api-container
+          image: kubernetesacr04082003.azurecr.io/kubernetes04082003:latest # Updated image name
+          ports:
+            - containerPort: 8080 # Retained original container port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubernetes-api-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: kubernetes-api
+  ports:
+    - protocol: TCP
+      port: 80 # Service port accessible externally
+      targetPort: 8080 # Matches container port in the deployment
