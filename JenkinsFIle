@@ -6,7 +6,7 @@ pipeline {
         ACR_LOGIN_SERVER = "${ACR_NAME}.azurecr.io"
         IMAGE_NAME = 'kubernetes04082003'
         RESOURCE_GROUP = 'rg-aks-acr'
-        AKS_CLUSTER = 'my-cluster-040820035'
+        AKS_CLUSTER = 'mycluster040820035'
     }
 
     stages {
